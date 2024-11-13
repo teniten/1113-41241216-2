@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google 登入</title>
+</head>
+<body>
+  <h2>Google 登入示範</h2>
+  <!-- 登入按鈕 -->
+  <button id="loginButton">使用 Google 登入</button>
+
+  <div id="userInfo" style="display:none;">
+    <h3>已登入</h3>
+    <p>姓名: <span id="userName"></span></p>
+    <p>電子郵件: <span id="userEmail"></span></p>
+    <img id="userPhoto" src="" alt="使用者頭像" style="width:100px; height:100px; border-radius:50%;"><br><br>
+    <button id="logoutButton">登出</button>
+  </div>
+
+  <script type="module">
+    // 載入 Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    // Firebase 配置
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAjYuSV0vu8wwh6BvpxsVj14CLst8nIDU",
+      authDomain: "web1113-5bdb8.firebaseapp.com",
+      projectId: "web1113-5bdb8",
+      storageBucket: "web1113-5bdb8.appspot.com",
+      messagingSenderId: "336450181091",
+      appId: "1:336450181091:web:a60795f879c78445dfb2d6"
+    };
+
+    // 初始化 Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Google 認證提供者
+    const provider = new GoogleAuthProvider();
+
+    // 取得登入按鈕和登出按鈕
+    const loginButton = document.getElementById('loginButton');
+    const logoutButton = document.getElementById('logoutButton');
+
+    // 取得用戶信息顯示區域
+    const userInfo = document.getElementById('userInfo');
+    const userName = document.getElementById('userName');
+    const userEmail = document.getElementById('userEmail');
+    const userPhoto = document.getElementById('userPhoto');
+
+    // 當用戶按下登入按鈕時，開始 Google 登入流程
+    loginButton.addEventListener('click', () => {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          const user = result.user;
+          // 顯示登入用戶資訊
+          userName.textContent = user.displayName;
+          userEmail.textContent = user.email;
+          userPhoto.src = user.photoURL; // 顯示用戶頭像
+          userInfo.style.display = 'block'; // 顯示用戶資訊
+          loginButton.style.display = 'none'; // 隱藏登入按鈕
+        })
+        .catch((error) => {
+          console.error("登入失敗:", error);
+        });
+    });
+
+    // 當用戶按下登出按鈕時，登出
+    logoutButton.addEventListener('click', () => {
+      signOut(auth).then(() => {
+        // 登出後隱藏用戶資訊並顯示登入按鈕
+        userInfo.style.display = 'none';
+        loginButton.style.display = 'block';
+      }).catch((error) => {
+        console.error("登出失敗:", error);
+      });
+    });
+  </script>
+</body>
+</html>
